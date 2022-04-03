@@ -58,7 +58,7 @@ public class Pathfinding : MonoBehaviour
             }
         }
 
-        return null;
+        return new List<Vector2>();
     }
 
     private List<Vector2> RetracePath( Node start, Node end )

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Employee : MonoBehaviour
 {
@@ -10,15 +11,10 @@ public class Employee : MonoBehaviour
     private static int taskCount = System.Enum.GetNames(typeof(Task)).Length;
 
     public string firstName;
-    public Color eyeColor;
-    public Color tieColor;
     //private Color outlineColor;
-    private int employeeID;
+    public TextMeshPro label;
+    public EmployeeVisual sprite;
 
-    public SpriteRenderer body;
-    public SpriteRenderer eyes;
-    public SpriteRenderer tie;
-    public SpriteRenderer outline;
     //private Rigidbody2D rb2D;
 
     //public bool knowsSecret;
@@ -44,19 +40,12 @@ public class Employee : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //rb2D = GetComponent<Rigidbody2D>();
-        employeeID = Game.instance.office.RegisterEmployee(this);
         cubicle = transform.position;
-
-        // Get Random Eye Color
-        // Get Random Tie Color
-        // Get Random First Name
-        // Randomly Flip Sprites
-
-        eyes.color = eyeColor;
-        tie.color = tieColor;
+        //rb2D = GetComponent<Rigidbody2D>();
+        firstName = Game.instance.office.RegisterEmployee(this);
+        label.SetText(firstName);
         if ( gossipLevel == maxGossip )
-            outline.color = Game.instance.knowColor;
+            label.color = Game.instance.knowColor;
 
         currentTask = Task.Work;
         taskTimer = Random.Range( taskMinDur[(int)currentTask], taskMaxDur[(int)currentTask]);
@@ -85,11 +74,15 @@ public class Employee : MonoBehaviour
                     else
                     {
                         travelling = false;
+                        sprite.SetWobble(false);
 
                         if ( currentTask == Task.Gossip )
                             PickNextTask();
+                        return;
                     }
                     //rb2D.velocity = Vector2.zero;
+                    // Wobble
+
                 }
             }
             else if( currentTask != Task.Gossip )
@@ -112,13 +105,14 @@ public class Employee : MonoBehaviour
             if ( gossipLevel == maxGossip )
             {
                 Game.instance.SecretShared();
-                outline.color = Game.instance.knowColor;
+                label.color = Game.instance.knowColor;
             }
         }
     }
 
     public void StopGossip()
     {
+        Debug.Log($"{name} stopping {currentTask}");
         gossip = null;
         PickNextTask();
     }
@@ -130,6 +124,7 @@ public class Employee : MonoBehaviour
         //taskTimer = taskDurations[(int)currentTask];
         gossipTarget = with;
         travelling = false;
+        sprite.SetWobble(false);
     }
 
     // Start Gossip
@@ -147,6 +142,7 @@ public class Employee : MonoBehaviour
             gossip.StartGossiping(this, targ);
             targ.GossipWith(this);
             travelling = false;
+            sprite.SetWobble(false);
         }
     }
 
@@ -157,6 +153,7 @@ public class Employee : MonoBehaviour
         //taskTimer = taskDurations[(int)currentTask];
         gossipTarget = targ;
         travelling = false;
+        sprite.SetWobble(false);
     }
 
     private void PickNextTask()
@@ -182,7 +179,7 @@ public class Employee : MonoBehaviour
             {
                 currentTask = Task.Gossip;
                 // Determine Gossip Target
-                gossipTarget = Game.instance.office.GetRandomEmployee(employeeID);
+                gossipTarget = Game.instance.office.GetRandomEmployee(this);
                 FindPath(gossipTarget.cubicle);
                 // Reset Weight
                 taskWeight[(int)Task.Gossip] = 1;
@@ -218,6 +215,12 @@ public class Employee : MonoBehaviour
             pathIndex = 0;
             destination = path[0];
             travelling = true;
+            sprite.SetWobble(true);
+        }
+        else
+        {
+            Debug.Log($"{name} failed to find path to {currentTask} ({target})");
+            PickNextTask();
         }
     }
 

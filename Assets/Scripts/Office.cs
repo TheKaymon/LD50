@@ -11,7 +11,9 @@ public class Office : MonoBehaviour
     public Vector2 breakroom;
     public Vector2 bathroom;
 
-
+    public List<Color> eyeColors;
+    public List<Color> tieColors;
+    public List<string> names;
 
 
     // Start is called before the first frame update
@@ -26,16 +28,16 @@ public class Office : MonoBehaviour
         
     //}
 
-    public int RegisterEmployee( Employee employee )
+    public string RegisterEmployee( Employee employee )
     {
         employees.Add(employee);
-        return EmployeeCount - 1;
+        return names[Random.Range(0, names.Count)];
     }
 
-    public Employee GetRandomEmployee( int excludeID )
+    public Employee GetRandomEmployee( Employee requesting )
     {
         int index = Random.Range(0, EmployeeCount);
-        while ( index == excludeID )
+        while ( employees[index] == requesting )
             index = Random.Range(0, EmployeeCount);
         return employees[index];
     }

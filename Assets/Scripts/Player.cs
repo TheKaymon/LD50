@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public bool showTestPath = false;
+    public Transform testTarg;
+    public Node targNode;
+    public Node playerNode;
+    public List<Vector2> path = new List<Vector2>();
+    public NodeGrid grid;
+
     public Rigidbody2D rb;
     public LayerMask interactMask;
 
@@ -14,7 +21,7 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     //void Start()
     //{
-        
+
     //}
 
     // Update is called once per frame
@@ -40,13 +47,42 @@ public class Player : MonoBehaviour
                 }
             }
         }
+
+
+        if ( showTestPath )
+        {
+            Node newPlayer = grid.NodeFromWorld(transform.position);
+            Node newTarg = grid.NodeFromWorld(testTarg.position);
+            if ( newPlayer != playerNode || newTarg != targNode )
+            {
+                path = Game.instance.office.pathfinder.FindPath(transform.position, testTarg.position);
+                playerNode = newPlayer;
+                targNode = newTarg;
+            }
+        }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, 0.5f);
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, interactRadius);
+
+
+        if( showTestPath && path.Count > 0 )
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(path[0], 0.1f);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, path[0]);
+            for ( int i = 0 + 1; i < path.Count; i++ )
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(path[i], 0.1f);
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(path[i - 1], path[i]);
+            }
+        }
     }
 }

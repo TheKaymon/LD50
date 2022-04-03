@@ -16,6 +16,7 @@ public class Game : MonoBehaviour
     public Office office;
     public Player player;
     //public Boss boss;
+    public AnimationCurve wobbleCurve;
 
     public Gossip gossipPrefab;
     public TextBubble bubblePrefab;

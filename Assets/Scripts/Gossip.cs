@@ -59,8 +59,6 @@ public class Gossip : MonoBehaviour
         DetermineX();
 
         GenerateGossip();
-
-        Debug.Log($"{participants[0].name} and {participants[1].name} are gossiping");
     }
 
     public void JoinGossip( Employee employee )
@@ -119,9 +117,10 @@ public class Gossip : MonoBehaviour
         // 10% Chance to reveal secret per gossip level
         sharingSecret = Random.Range(0, 10) < talking.gossipLevel;
 
-        Vector3 offset = talking.transform.position.x > medianX ? leftOffset : rightOffset;
+        bool onLeft = talking.transform.position.x > medianX;
+        Vector3 offset = onLeft ? leftOffset : rightOffset;
         lastBubble = Instantiate(Game.instance.bubblePrefab, talking.transform.position + offset, Quaternion.identity);
-        lastBubble.Initialize(gossipInterval, sharingSecret, index + 1);
+        lastBubble.Initialize(gossipInterval, sharingSecret, onLeft, index + 1);
         lastBubble.gameObject.SetActive(true);
     }
 }

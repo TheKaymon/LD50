@@ -23,19 +23,7 @@ public class Node : IHeapItem<Node>
         gridX = x;
         gridY = y;
     }
-
-    private int heapIndex;
-    public int HeapIndex
-    {
-        get
-        {
-            return heapIndex;
-        }
-        set
-        {
-            heapIndex = value;
-        }
-    }
+    public int HeapIndex { get; set; }
 
     public int CompareTo(Node other)
     {
@@ -77,8 +65,8 @@ public class NodeGrid : MonoBehaviour
         float percentX = Mathf.Clamp01((pos.x + gridSize.x / 2) / gridSize.x );
         float percentY = Mathf.Clamp01(( pos.y + gridSize.y / 2 ) / gridSize.y);
 
-        int x = Mathf.RoundToInt(( gridSizeX-1 ) * percentX);
-        int y = Mathf.RoundToInt(( gridSizeY-1 ) * percentY);
+        int x = Mathf.CeilToInt(( gridSizeX-1 ) * percentX);
+        int y = Mathf.CeilToInt(( gridSizeY-1 ) * percentY);
 
         return nodes[x, y];
     }
@@ -114,7 +102,7 @@ public class NodeGrid : MonoBehaviour
         gridSize = gridEnd - gridStart;
         gridSizeX = Mathf.CeilToInt(gridSize.x / nodeSize);
         gridSizeY = Mathf.CeilToInt(gridSize.y / nodeSize);
-        Vector2 boxSize = new Vector2(nodeSize * 0.25f, nodeSize * 0.25f);
+        Vector2 boxSize = new Vector2(nodeSize * 0.75f, nodeSize * 0.75f);
         Vector3 pos;
         nodes = new Node[gridSizeX, gridSizeY];
 
@@ -129,17 +117,17 @@ public class NodeGrid : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         //Gizmos.DrawWireCube(( gridStart + gridEnd ) / 2, gridEnd - gridStart );
-        //Vector2 size = new Vector2(nodeSize, nodeSize);
+        Vector2 size = new Vector3(nodeSize, nodeSize, 1);
 
         if ( nodes != null )
         {
             foreach ( Node node in nodes )
             {
                 Gizmos.color = node.walkable ? Color.gray : Color.red;
-                Gizmos.DrawWireSphere(node.worldPos, nodeSize/2f);
+                Gizmos.DrawWireCube(node.worldPos, size);
             }
         }
     }
