@@ -102,7 +102,7 @@ public class NodeGrid : MonoBehaviour
         gridSize = gridEnd - gridStart;
         gridSizeX = Mathf.CeilToInt(gridSize.x / nodeSize);
         gridSizeY = Mathf.CeilToInt(gridSize.y / nodeSize);
-        Vector2 boxSize = new Vector2(nodeSize * 0.75f, nodeSize * 0.75f);
+        Vector2 boxSize = new Vector2(nodeSize * 0.5f, nodeSize * 0.5f);
         Vector3 pos;
         nodes = new Node[gridSizeX, gridSizeY];
 

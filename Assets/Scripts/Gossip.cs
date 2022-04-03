@@ -49,7 +49,7 @@ public class Gossip : MonoBehaviour
 
     public void StartGossiping( Employee first, Employee second )
     {
-        Debug.Log($"{first.name} and {second.name} begin gossiping");
+        //Debug.Log($"{first.name} and {second.name} begin gossiping");
         participants.Add(first);
         participants.Add(second);
         second.gossip = this;
@@ -69,7 +69,7 @@ public class Gossip : MonoBehaviour
         gossipCount += 2;
         DetermineX();
 
-        Debug.Log($"{employee} joins a gossip sesh");
+        //Debug.Log($"{employee} joins a gossip sesh");
     }
 
     public void StopGossiping()

@@ -5,6 +5,7 @@ using TMPro;
 
 public class Employee : MonoBehaviour
 {
+    //public enum State { Task, Gossip, Scared, Travel };
     public enum Task { Gossip, Break, Bathroom, Work };
     private static float[] taskMinDur = { 7f, 4f, 3f, 5f };
     private static float[] taskMaxDur = { 8f, 6f, 7f, 10f };
@@ -112,7 +113,7 @@ public class Employee : MonoBehaviour
 
     public void StopGossip()
     {
-        Debug.Log($"{name} stopping {currentTask}");
+        //Debug.Log($"{name} stopping {currentTask}");
         gossip = null;
         PickNextTask();
     }
@@ -138,7 +139,7 @@ public class Employee : MonoBehaviour
             //taskTimer = taskDurations[(int)currentTask];
             gossipTarget = targ;
             gossip = Instantiate(Game.instance.gossipPrefab, transform.position, Quaternion.identity);
-            Debug.Log($"{name} is trying to gossip with {targ}");
+            //Debug.Log($"{name} is trying to gossip with {targ}");
             gossip.StartGossiping(this, targ);
             targ.GossipWith(this);
             travelling = false;
@@ -226,7 +227,7 @@ public class Employee : MonoBehaviour
 
     private void OnTriggerEnter2D( Collider2D collision )
     {
-        if ( gossip == null && collision.CompareTag("Employee") )
+        if ( gossip == null && travelling && collision.CompareTag("Employee") )
         {
             Employee other = collision.GetComponent<Employee>();
             //Debug.Log($"{name} collided with {collision.name}");
@@ -261,14 +262,14 @@ public class Employee : MonoBehaviour
     {
         if ( travelling && path.Count > 0 )
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawSphere(path[pathIndex], 0.1f);
+            //Gizmos.color = Color.yellow;
+            //Gizmos.DrawSphere(path[pathIndex], 0.1f);
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, path[pathIndex]);
             for ( int i = pathIndex+1; i < path.Count; i++ )
             {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawSphere(path[i], 0.1f);
+                //Gizmos.color = Color.yellow;
+                //Gizmos.DrawSphere(path[i], 0.1f);
                 Gizmos.color = Color.red;
                 Gizmos.DrawLine(path[i - 1], path[i]);
             }

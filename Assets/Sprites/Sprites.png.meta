@@ -295,6 +295,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Box
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 215
+        width: 3
+        height: 3
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57d66571c61337b429ed9e2232bd7563
+      internalID: 67336652
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -312,6 +333,7 @@ TextureImporter:
       Boss: 840673522
       Tie: 209294651
       Player: -655743402
+      Box: 67336652
       Startle: 5970179
       Eyes: -654256879
   spritePackingTag: 
