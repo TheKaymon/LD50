@@ -49,6 +49,7 @@ public class Gossip : MonoBehaviour
 
     public void StartGossiping( Employee first, Employee second )
     {
+        Debug.Log($"{first.name} and {second.name} begin gossiping");
         participants.Add(first);
         participants.Add(second);
         second.gossip = this;
@@ -59,7 +60,7 @@ public class Gossip : MonoBehaviour
 
         GenerateGossip();
 
-        Debug.Log($"{participants[0].name} and {participants[1].name} begin gossiping");
+        Debug.Log($"{participants[0].name} and {participants[1].name} are gossiping");
     }
 
     public void JoinGossip( Employee employee )
@@ -115,11 +116,8 @@ public class Gossip : MonoBehaviour
         int index = Random.Range(0, participants.Count);
         talking = participants[index];
 
-        if ( talking.gossipLevel > 0 )
-        {
-            // 20% Chance to reveal secret
-            sharingSecret = Random.Range(0f, 1f) > 0.8f;
-        }
+        // 10% Chance to reveal secret per gossip level
+        sharingSecret = Random.Range(0, 10) < talking.gossipLevel;
 
         Vector3 offset = talking.transform.position.x > medianX ? leftOffset : rightOffset;
         lastBubble = Instantiate(Game.instance.bubblePrefab, talking.transform.position + offset, Quaternion.identity);

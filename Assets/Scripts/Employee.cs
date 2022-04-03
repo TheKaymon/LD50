@@ -5,7 +5,8 @@ using UnityEngine;
 public class Employee : MonoBehaviour
 {
     public enum Task { Gossip, Break, Bathroom, Work };
-    private static float[] taskDurations = { 8f, 4f, 6f, 5f };
+    private static float[] taskMinDur = { 7f, 4f, 3f, 5f };
+    private static float[] taskMaxDur = { 8f, 6f, 7f, 10f };
     private static int taskCount = System.Enum.GetNames(typeof(Task)).Length;
 
     public string firstName;
@@ -35,7 +36,10 @@ public class Employee : MonoBehaviour
     private int[] taskWeight = { 1, 1, 1, 3 };
     private int[] totalWeights = { 0, 0, 0, 0 };
     private Employee gossipTarget;
-    
+
+    private const float distThreshold = 0.01f;
+    private List<Vector2> path = new List<Vector2>();
+    private int pathIndex;
 
     // Start is called before the first frame update
     void Start()
@@ -55,7 +59,7 @@ public class Employee : MonoBehaviour
             outline.color = Game.instance.knowColor;
 
         currentTask = Task.Work;
-        taskTimer = taskDurations[(int)currentTask];
+        taskTimer = Random.Range( taskMinDur[(int)currentTask], taskMaxDur[(int)currentTask]);
     }
 
     // Update is called once per frame
@@ -70,12 +74,21 @@ public class Employee : MonoBehaviour
                 //direction = ( destination - (Vector2)transform.position ).normalized; // Move to Pathfinding
                 //rb2D.velocity = direction * speed;
                 // Check Distance
-                if ( Vector2.SqrMagnitude((Vector2)transform.position - destination) < 0.2f )
+                if ( Vector2.SqrMagnitude((Vector2)transform.position - destination) < distThreshold )
                 {
-                    travelling = false;
+                    pathIndex++;
 
-                    if ( currentTask == Task.Gossip )
-                        PickNextTask();
+                    if ( pathIndex < path.Count )
+                    {
+                        destination = path[pathIndex];
+                    }
+                    else
+                    {
+                        travelling = false;
+
+                        if ( currentTask == Task.Gossip )
+                            PickNextTask();
+                    }
                     //rb2D.velocity = Vector2.zero;
                 }
             }
@@ -130,7 +143,7 @@ public class Employee : MonoBehaviour
             //taskTimer = taskDurations[(int)currentTask];
             gossipTarget = targ;
             gossip = Instantiate(Game.instance.gossipPrefab, transform.position, Quaternion.identity);
-            //Debug.Log($"{name} is trying to gossip with {targ}");
+            Debug.Log($"{name} is trying to gossip with {targ}");
             gossip.StartGossiping(this, targ);
             targ.GossipWith(this);
             travelling = false;
@@ -153,7 +166,7 @@ public class Employee : MonoBehaviour
         if ( previousTask != Task.Work )
         {
             currentTask = Task.Work;
-            destination = cubicle;
+            FindPath(cubicle);
             taskWeight[(int)Task.Gossip] += 1;
         }
         else
@@ -168,48 +181,44 @@ public class Employee : MonoBehaviour
             if ( result <= totalWeights[0] )
             {
                 currentTask = Task.Gossip;
+                // Determine Gossip Target
+                gossipTarget = Game.instance.office.GetRandomEmployee(employeeID);
+                FindPath(gossipTarget.cubicle);
+                // Reset Weight
+                taskWeight[(int)Task.Gossip] = 1;
             }
             else if ( result <= totalWeights[1] )
             {
                 currentTask = Task.Break;
+                FindPath(Game.instance.office.breakroom);
+                // Reset Weight
+                taskWeight[(int)Task.Break] = 1;
             }
             else if ( result <= totalWeights[2] )
             {
                 currentTask = Task.Bathroom;
+                FindPath(Game.instance.office.bathroom);
+                // Reset Weight
+                taskWeight[(int)Task.Bathroom] = 1;
             }
             else
                 currentTask = Task.Work;
         }
 
-        taskTimer = taskDurations[(int)currentTask];
+        taskTimer = Random.Range(taskMinDur[(int)currentTask], taskMaxDur[(int)currentTask]);
 
-        // Decide if Travelling
-        if ( previousTask != currentTask )
+    }
+
+    private void FindPath( Vector2 target )
+    {
+        path.Clear();
+        path.AddRange(Game.instance.office.pathfinder.FindPath(transform.position, target));
+        if ( path.Count > 0 )
         {
+            pathIndex = 0;
+            destination = path[0];
             travelling = true;
         }
-
-        if ( currentTask == Task.Gossip )
-        {
-            // Determine Gossip Target
-            gossipTarget = Game.instance.office.GetRandomEmployee(employeeID);
-            destination = gossipTarget.cubicle;
-            // Reset Weight
-            taskWeight[(int)Task.Gossip] = 1;
-        }
-        else if( currentTask == Task.Break )
-        {
-            destination = Game.instance.office.breakroom;
-            // Reset Weight
-            taskWeight[(int)Task.Break] = 1;
-        }
-        else if ( currentTask == Task.Bathroom )
-        {
-            destination = Game.instance.office.bathroom;
-            // Reset Weight
-            taskWeight[(int)Task.Bathroom] = 1;
-        }
-
     }
 
     private void OnTriggerEnter2D( Collider2D collision )
@@ -241,6 +250,24 @@ public class Employee : MonoBehaviour
                         StartGossip(other);
                     }
                 }
+            }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if ( travelling && path.Count > 0 )
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(path[pathIndex], 0.1f);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, path[pathIndex]);
+            for ( int i = pathIndex+1; i < path.Count; i++ )
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawSphere(path[i], 0.1f);
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(path[i - 1], path[i]);
             }
         }
     }

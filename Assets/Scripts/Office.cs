@@ -7,6 +7,7 @@ public class Office : MonoBehaviour
     private List<Employee> employees = new List<Employee>();
     public int EmployeeCount => ( employees.Count );
     //public Boss boss;
+    public Pathfinding pathfinder;
     public Vector2 breakroom;
     public Vector2 bathroom;
 

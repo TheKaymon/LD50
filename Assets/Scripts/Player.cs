@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public Rigidbody2D rb;
     public LayerMask interactMask;
 
     public float interactRadius = 1f;
-    public float speed = 5f;
+    public float speed = 50f;
 
 
     // Start is called before the first frame update
@@ -24,9 +25,10 @@ public class Player : MonoBehaviour
 
         Vector2 direction = new Vector2(horz, vert).normalized;
 
-        transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3) direction, speed * Time.deltaTime);
+        //transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3) direction, speed * Time.deltaTime);
+        rb.velocity = direction * speed;
 
-        if( Input.GetButtonDown("Jump") )
+        if ( Input.GetButtonDown("Jump") )
         {
             Collider2D[] results = Physics2D.OverlapCircleAll(transform.position, interactRadius); //Layermask
             foreach ( Collider2D hit in results )
@@ -42,6 +44,8 @@ public class Player : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, 0.5f);
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, interactRadius);
     }
