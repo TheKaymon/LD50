@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
@@ -28,13 +29,15 @@ public class Game : MonoBehaviour
 
     public Color knowColor;
 
+    private const int maxReputation = 100;
     private int reputation;
     private float timer;
 
     // Start is called before the first frame update
     void Start()
     {
-        reputation = 100;
+        reputation = maxReputation - 10;
+        DisplayReputation();
         timer = 0f;
     }
 
@@ -42,18 +45,24 @@ public class Game : MonoBehaviour
     void Update()
     {
         if ( !paused )
+        {
             timer += Time.deltaTime;
+
+            //if( Input.GetKeyDown(KeyCode.Escape )
+        }
     }
 
-    public void SeenByBoss( bool inOffice )
+    public void SeenByBoss()
     {
-        if( inOffice)
-            reputation += 5;
-        else
-            reputation -= 10;
+        reputation -= 10;
 
         if ( reputation <= 0 )
+        {
+            reputation = 0;
             EndGame();
+        }
+
+        DisplayReputation();
     }
 
     public void SecretShared()
@@ -61,7 +70,12 @@ public class Game : MonoBehaviour
         reputation -= 4;
 
         if ( reputation <= 0 )
+        {
+            reputation = 0;
             EndGame();
+        }
+
+        DisplayReputation();
     }
 
     public void EndGame()
@@ -70,5 +84,21 @@ public class Game : MonoBehaviour
 
         gameOverText.SetText("Game Over");
         gameOverScreen.SetActive(true);
+    }
+
+    public void Quit()
+    {
+        Application.Quit(); // Desktop
+        //SceneManager.LoadScene(0); //Web
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void DisplayReputation()
+    {
+        reputationBar.fillAmount = ( (float)reputation / maxReputation );
     }
 }

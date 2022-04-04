@@ -19,7 +19,7 @@ public class Employee : MonoBehaviour
     //private Rigidbody2D rb2D;
 
     //public bool knowsSecret;
-    public const int maxGossip = 4;
+    public const int maxGossip = 1;
     public int gossipLevel = 0;
     public Gossip gossip;
 
@@ -61,8 +61,6 @@ public class Employee : MonoBehaviour
             {
                 // Move
                 transform.position = Vector2.MoveTowards(transform.position, destination, speed * Time.deltaTime);
-                //direction = ( destination - (Vector2)transform.position ).normalized; // Move to Pathfinding
-                //rb2D.velocity = direction * speed;
                 // Check Distance
                 if ( Vector2.SqrMagnitude((Vector2)transform.position - destination) < distThreshold )
                 {
@@ -81,14 +79,11 @@ public class Employee : MonoBehaviour
                             PickNextTask();
                         return;
                     }
-                    //rb2D.velocity = Vector2.zero;
-                    // Wobble
 
                 }
             }
             else if( currentTask != Task.Gossip )
             {
-                //rb2D.velocity = Vector2.MoveTowards(rb2D.velocity, Vector2.zero, speed * Time.deltaTime);
                 taskTimer -= Time.deltaTime;
                 if ( taskTimer < 0 )
                 {
@@ -103,9 +98,9 @@ public class Employee : MonoBehaviour
         if ( gossipLevel < level )
         {
             gossipLevel++;
+            Game.instance.SecretShared();
             if ( gossipLevel == maxGossip )
             {
-                Game.instance.SecretShared();
                 label.color = Game.instance.knowColor;
             }
         }
@@ -164,7 +159,8 @@ public class Employee : MonoBehaviour
         if ( previousTask != Task.Work )
         {
             currentTask = Task.Work;
-            FindPath(cubicle);
+            if( Vector2.SqrMagnitude((Vector2)transform.position - cubicle) > 1f )
+                FindPath(cubicle);
             taskWeight[(int)Task.Gossip] += 1;
         }
         else
@@ -188,14 +184,14 @@ public class Employee : MonoBehaviour
             else if ( result <= totalWeights[1] )
             {
                 currentTask = Task.Break;
-                FindPath(Game.instance.office.breakroom);
+                FindPath(Game.instance.office.GetDestination());
                 // Reset Weight
                 taskWeight[(int)Task.Break] = 1;
             }
             else if ( result <= totalWeights[2] )
             {
                 currentTask = Task.Bathroom;
-                FindPath(Game.instance.office.bathroom);
+                FindPath(Game.instance.office.GetDestination());
                 // Reset Weight
                 taskWeight[(int)Task.Bathroom] = 1;
             }

@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public NodeGrid grid;
 
     public Rigidbody2D rb;
+    public ParticleSystem particles;
     public Transform visual;
     public LayerMask interactMask;
     public Vector2 officeMin;
@@ -23,7 +24,7 @@ public class Player : MonoBehaviour
     private const float wobbleAngle = 15f;
     //private bool wobbling = false;
     private float wobbleTimer = 0f;
-    private const float wobbleInterval = 1f;
+    private const float wobbleInterval = 0.75f;
     private float zRot = 0f;
 
     // Start is called before the first frame update
@@ -60,6 +61,7 @@ public class Player : MonoBehaviour
 
         if ( Input.GetButtonDown("Jump") )
         {
+            bool stopGossip = false;
             Collider2D[] results = Physics2D.OverlapCircleAll(transform.position, interactRadius); //Layermask
             foreach ( Collider2D hit in results )
             {
@@ -67,7 +69,14 @@ public class Player : MonoBehaviour
                 {
                     hit.GetComponent<Gossip>().StopGossiping();
                     Debug.Log(hit.name);
+                    stopGossip = true;
                 }
+            }
+            if( stopGossip )
+            {
+                // Do Particles
+                particles.Play();
+                Audio.instance.PlaySFX(0, transform.position, Random.Range(0.9f, 1.1f));
             }
         }
 

@@ -13,7 +13,7 @@ public class EmployeeVisual : MonoBehaviour
     private const float wobbleAngle = 15f;
     private bool wobbling = false;
     private float wobbleTimer = 0f;
-    private const float wobbleInterval = 1f;
+    private const float wobbleInterval = 0.75f;
 
     // Start is called before the first frame update
     void Start()

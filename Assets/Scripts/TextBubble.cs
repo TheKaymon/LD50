@@ -32,13 +32,10 @@ public class TextBubble : MonoBehaviour
 
     }
 
-    public void Initialize( float duration, bool urgent, bool flipped, int debug ) //color
+    public void Initialize( float duration, bool urgent, bool flipped ) //color
     {
         lifeTime = duration;
         UpdateSize();
-
-        text.SetActive(true);
-        text.GetComponent<TextMeshPro>().SetText(debug.ToString());
 
         if ( flipped )
             sr.flipX = true;

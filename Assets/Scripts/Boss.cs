@@ -14,7 +14,6 @@ public class Boss : MonoBehaviour
     private float minTime = 10f;
     private int patrolIndex;
     private const float distThreshold = 0.01f;
-    private bool repImproved = false;
 
     private const float wobbleAngle = 15f;
     private float wobbleTimer = 0f;
@@ -62,7 +61,6 @@ public class Boss : MonoBehaviour
             {
                 patrolIndex = 0;
                 wobbleTimer = 0f;
-                repImproved = false;
                 patrolling = true;
             }
         }
@@ -82,16 +80,12 @@ public class Boss : MonoBehaviour
         if ( collision.gameObject.CompareTag("Player") )
         {
             Debug.Log($"{collision.gameObject.name} (trigger) was spotted by the Boss {Game.instance.player.InOffice()}");
-            if ( Game.instance.player.InOffice() )
+            if ( !Game.instance.player.InOffice() )
             {
-                if ( !repImproved )
-                {
-                    repImproved = true;
-                    Game.instance.SeenByBoss(true);
-                }
+                Game.instance.SeenByBoss();
+
+                Audio.instance.PlaySFX(1, transform.position, Random.Range(0.9f, 1.1f));
             }
-            else
-                Game.instance.SeenByBoss( false);
         }
     }
 }

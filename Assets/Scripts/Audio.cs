@@ -19,7 +19,7 @@ public class Audio : MonoBehaviour
     public float maxVolume = 10f;
     public AudioSource musicChannel;
     public List<AudioSource> sfxChannels;
-
+    public List<AudioClip> clips;
 
     //public readonly string masterMix = "MasterVol";
     public readonly string musicMix = "MusicVolume";
@@ -55,12 +55,12 @@ public class Audio : MonoBehaviour
         musicChannel.Stop();
     }
 
-    public void PlaySFX( AudioClip sound, Vector2 position, float pitch = 1f )
+    public void PlaySFX( int clipIndex, Vector2 position, float pitch = 1f )
     {
         sfxChannels[channelIndex].transform.SetPositionAndRotation(position, Quaternion.identity);
         //Debug.Log($"Playing Sound index {soundIndex} on channel {channelIndex}");
         sfxChannels[channelIndex].pitch = pitch;
-        sfxChannels[channelIndex].PlayOneShot(sound);
+        sfxChannels[channelIndex].PlayOneShot(clips[clipIndex]);
         channelIndex = ( channelIndex + 1 ) % sfxChannels.Count;
     }
 }

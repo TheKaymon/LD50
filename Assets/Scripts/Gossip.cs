@@ -11,7 +11,8 @@ public class Gossip : MonoBehaviour
 
     private int gossipCount = 5;
     private float gossipTimer;
-    private const float gossipInterval = 2f;
+    private const float minInterval = 1.5f;
+    private const float maxInterval = 3f;
 
     private List<Employee> participants = new List<Employee>();
 
@@ -33,18 +34,20 @@ public class Gossip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gossipTimer -= Time.deltaTime;
-        if ( gossipTimer < 0f )
+        if ( !Game.paused )
         {
-            gossipCount--;
-            if ( gossipCount <= 0 )
-                StopGossiping();
-            else
+            gossipTimer -= Time.deltaTime;
+            if ( gossipTimer < 0f )
             {
-                GenerateGossip();
+                gossipCount--;
+                if ( gossipCount <= 0 )
+                    StopGossiping();
+                else
+                {
+                    GenerateGossip();
+                }
             }
         }
-        
     }
 
     public void StartGossiping( Employee first, Employee second )
@@ -54,7 +57,7 @@ public class Gossip : MonoBehaviour
         participants.Add(second);
         second.gossip = this;
         //canShareSecret = first.knowsSecret || second.knowsSecret;
-        gossipTimer = gossipInterval;
+        gossipTimer = Random.Range(minInterval, maxInterval);
         enabled = true;
         DetermineX();
 
@@ -105,22 +108,23 @@ public class Gossip : MonoBehaviour
     private void GenerateGossip()
     {
         if ( sharingSecret )
-        {
             ShareSecret(talking.gossipLevel);
-        }
 
-        gossipTimer = gossipInterval;
+        gossipTimer = Random.Range(minInterval, maxInterval); ;
 
         int index = Random.Range(0, participants.Count);
         talking = participants[index];
 
-        // 10% Chance to reveal secret per gossip level
-        sharingSecret = Random.Range(0, 10) < talking.gossipLevel;
+        // 50% Chance to reveal secret per gossip level
+        sharingSecret = Random.Range(0, 2) < talking.gossipLevel;
 
         bool onLeft = talking.transform.position.x > medianX;
         Vector3 offset = onLeft ? leftOffset : rightOffset;
         lastBubble = Instantiate(Game.instance.bubblePrefab, talking.transform.position + offset, Quaternion.identity);
-        lastBubble.Initialize(gossipInterval, sharingSecret, onLeft, index + 1);
+        lastBubble.Initialize(gossipTimer, sharingSecret, onLeft);
         lastBubble.gameObject.SetActive(true);
+
+        if( sharingSecret )
+            Audio.instance.PlaySFX(2, transform.position, Random.Range(0.9f, 1.1f));
     }
 }
