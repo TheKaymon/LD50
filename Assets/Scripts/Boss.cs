@@ -43,16 +43,15 @@ public class Boss : MonoBehaviour
                     patrolling = false;
                     timer = Random.Range(minTime, maxTime);
                     transform.localRotation = Quaternion.identity;
+                    return;
                 }
-                else
-                {
-                    wobbleTimer += Time.deltaTime;
-                    if ( wobbleTimer > wobbleInterval )
-                        wobbleTimer -= wobbleInterval;
-                    float eval = Game.instance.wobbleCurve.Evaluate(wobbleTimer / wobbleInterval);
-                    transform.localRotation = Quaternion.Euler(0, 0, wobbleAngle * eval);
-                }
+
             }
+            wobbleTimer += Time.deltaTime;
+            if ( wobbleTimer > wobbleInterval )
+                wobbleTimer -= wobbleInterval;
+            float eval = Game.instance.wobbleCurve.Evaluate(wobbleTimer / wobbleInterval);
+            transform.localRotation = Quaternion.Euler(0, 0, wobbleAngle * eval);
         }
         else
         {

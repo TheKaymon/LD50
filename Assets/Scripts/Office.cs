@@ -11,6 +11,7 @@ public class Office : MonoBehaviour
 
     public List<Vector2> movementPoints;
 
+    public List<Sprite> sprites;
     public List<Color> eyeColors;
     public List<Color> tieColors;
     public List<string> names;

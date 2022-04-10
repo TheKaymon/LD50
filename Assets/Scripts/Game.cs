@@ -26,6 +26,7 @@ public class Game : MonoBehaviour
 
     public Gossip gossipPrefab;
     public TextBubble bubblePrefab;
+    public Color gossipColor;
 
     public Color knowColor;
 
@@ -39,6 +40,7 @@ public class Game : MonoBehaviour
         reputation = maxReputation - 10;
         DisplayReputation();
         timer = 0f;
+        paused = false;
     }
 
     // Update is called once per frame
@@ -67,7 +69,7 @@ public class Game : MonoBehaviour
 
     public void SecretShared()
     {
-        reputation -= 4;
+        reputation -= 5;
 
         if ( reputation <= 0 )
         {
@@ -82,14 +84,13 @@ public class Game : MonoBehaviour
     {
         paused = true;
 
-        gameOverText.SetText("Game Over");
+        gameOverText.SetText($"You managed to hold onto your reputation for {Mathf.FloorToInt(timer / 30f)} hours.");
         gameOverScreen.SetActive(true);
     }
 
     public void Quit()
     {
-        Application.Quit(); // Desktop
-        //SceneManager.LoadScene(0); //Web
+        SceneManager.LoadScene(0);
     }
 
     public void Restart()

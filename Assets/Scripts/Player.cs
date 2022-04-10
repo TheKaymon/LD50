@@ -36,60 +36,63 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float horz = Input.GetAxisRaw("Horizontal");
-        float vert = Input.GetAxisRaw("Vertical");
-
-        Vector2 direction = new Vector2(horz, vert).normalized;
-
-        //transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3) direction, speed * Time.deltaTime);
-        rb.velocity = direction * speed;
-
-        if( rb.velocity.magnitude > 0.1f )
+        if ( !Game.paused )
         {
-            wobbleTimer += Time.deltaTime;
-            if ( wobbleTimer > wobbleInterval )
-                wobbleTimer -= wobbleInterval;
-            float eval = Game.instance.wobbleCurve.Evaluate(wobbleTimer / wobbleInterval);
-            zRot = wobbleAngle * eval;
-            visual.localRotation = Quaternion.Euler(0, 0, zRot);
-        }
-        else
-        {
-            zRot = Mathf.MoveTowards(zRot, 0, 3 * wobbleAngle * Time.deltaTime);
-            visual.localRotation = Quaternion.Euler(0, 0, zRot);
-        }
+            float horz = Input.GetAxisRaw("Horizontal");
+            float vert = Input.GetAxisRaw("Vertical");
 
-        if ( Input.GetButtonDown("Jump") )
-        {
-            bool stopGossip = false;
-            Collider2D[] results = Physics2D.OverlapCircleAll(transform.position, interactRadius); //Layermask
-            foreach ( Collider2D hit in results )
+            Vector2 direction = new Vector2(horz, vert).normalized;
+
+            //transform.position = Vector2.MoveTowards(transform.position, transform.position + (Vector3) direction, speed * Time.deltaTime);
+            rb.velocity = direction * speed;
+
+            if ( rb.velocity.magnitude > 0.1f )
             {
-                if ( hit.CompareTag("Gossip") )
+                wobbleTimer += Time.deltaTime;
+                if ( wobbleTimer > wobbleInterval )
+                    wobbleTimer -= wobbleInterval;
+                float eval = Game.instance.wobbleCurve.Evaluate(wobbleTimer / wobbleInterval);
+                zRot = wobbleAngle * eval;
+                visual.localRotation = Quaternion.Euler(0, 0, zRot);
+            }
+            else
+            {
+                zRot = Mathf.MoveTowards(zRot, 0, 3 * wobbleAngle * Time.deltaTime);
+                visual.localRotation = Quaternion.Euler(0, 0, zRot);
+            }
+
+            if ( Input.GetButtonDown("Jump") )
+            {
+                bool stopGossip = false;
+                Collider2D[] results = Physics2D.OverlapCircleAll(transform.position, interactRadius); //Layermask
+                foreach ( Collider2D hit in results )
                 {
-                    hit.GetComponent<Gossip>().StopGossiping();
-                    Debug.Log(hit.name);
-                    stopGossip = true;
+                    if ( hit.CompareTag("Gossip") )
+                    {
+                        hit.GetComponent<Gossip>().StopGossiping();
+                        //Debug.Log(hit.name);
+                        stopGossip = true;
+                    }
+                }
+                if ( stopGossip )
+                {
+                    // Do Particles
+                    particles.Play();
+                    Audio.instance.PlaySFX(0, transform.position, Random.Range(0.9f, 1.1f));
                 }
             }
-            if( stopGossip )
-            {
-                // Do Particles
-                particles.Play();
-                Audio.instance.PlaySFX(0, transform.position, Random.Range(0.9f, 1.1f));
-            }
-        }
 
 
-        if ( showTestPath )
-        {
-            Node newPlayer = grid.NodeFromWorld(transform.position);
-            Node newTarg = grid.NodeFromWorld(testTarg.position);
-            if ( newPlayer != playerNode || newTarg != targNode )
+            if ( showTestPath )
             {
-                path = Game.instance.office.pathfinder.FindPath(transform.position, testTarg.position);
-                playerNode = newPlayer;
-                targNode = newTarg;
+                Node newPlayer = grid.NodeFromWorld(transform.position);
+                Node newTarg = grid.NodeFromWorld(testTarg.position);
+                if ( newPlayer != playerNode || newTarg != targNode )
+                {
+                    path = Game.instance.office.pathfinder.FindPath(transform.position, testTarg.position);
+                    playerNode = newPlayer;
+                    targNode = newTarg;
+                }
             }
         }
     }

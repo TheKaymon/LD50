@@ -42,12 +42,12 @@ public class TextBubble : MonoBehaviour
 
         if ( urgent )
         {
-            sr.color = Color.red;
+            sr.color = Game.instance.gossipColor;
             text.SetActive(true);
             //Audio.instance.PlaySFX(pointsLost, transform.position);
         }
-        else
-            sr.color = Color.grey;
+        //else
+        //    sr.color = Color.grey;
     }
 
     public void Remove()

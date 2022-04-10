@@ -46,7 +46,10 @@ public class Employee : MonoBehaviour
         firstName = Game.instance.office.RegisterEmployee(this);
         label.SetText(firstName);
         if ( gossipLevel == maxGossip )
+        {
             label.color = Game.instance.knowColor;
+            label.fontStyle = FontStyles.Bold;
+        }
 
         currentTask = Task.Work;
         taskTimer = Random.Range( taskMinDur[(int)currentTask], taskMaxDur[(int)currentTask]);
@@ -102,6 +105,7 @@ public class Employee : MonoBehaviour
             if ( gossipLevel == maxGossip )
             {
                 label.color = Game.instance.knowColor;
+                label.fontStyle = FontStyles.Bold;
             }
         }
     }

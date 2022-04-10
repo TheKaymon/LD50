@@ -21,8 +21,8 @@ public class Gossip : MonoBehaviour
     private Employee talking;
 
     private float medianX;
-    private Vector3 leftOffset = new Vector2(-.75f, 0.3f);
-    private Vector3 rightOffset = new Vector2(.5f, 0.3f);
+    private Vector3 leftOffset = new Vector2(-.25f, 0.25f);
+    private Vector3 rightOffset = new Vector2(.25f, 0.25f);
 
     private TextBubble lastBubble = null;
     // Start is called before the first frame update
@@ -62,6 +62,8 @@ public class Gossip : MonoBehaviour
         DetermineX();
 
         GenerateGossip();
+
+        Audio.instance.PlaySFX(2, transform.position, Random.Range(0.8f, 1f));
     }
 
     public void JoinGossip( Employee employee )
